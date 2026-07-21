@@ -190,7 +190,10 @@ resource "azurerm_container_app" "atlantis" {
           repos = [
             {
               id                     = "github.com/${var.github_owner}/${var.github_repository}"
-              allowed_overrides      = ["workflow"]
+              allowed_overrides      = [
+                "workflow",
+                "apply_requirements"
+              ]
               allow_custom_workflows = true
             }
           ]
