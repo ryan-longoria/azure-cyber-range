@@ -157,22 +157,11 @@ resource "azurerm_container_app" "atlantis" {
     min_replicas = 1
     max_replicas = 1
 
-    volume {
-      name         = "atlantis-data"
-      storage_name = azurerm_container_app_environment_storage.atlantis.name
-      storage_type = "AzureFile"
-    }
-
     container {
       name   = "atlantis"
       image  = var.atlantis_image
       cpu    = 1.0
       memory = "2Gi"
-
-      volume_mounts {
-        name = "atlantis-data"
-        path = "/home/atlantis/.atlantis"
-      }
 
       env {
         name  = "HOME"
@@ -192,6 +181,20 @@ resource "azurerm_container_app" "atlantis" {
       env {
         name  = "ATLANTIS_REPO_ALLOWLIST"
         value = "github.com/${var.github_owner}/${var.github_repository}"
+      }
+
+      env {
+        name = "ATLANTIS_REPO_CONFIG_JSON"
+
+        value = jsonencode({
+          repos = [
+            {
+              id                     = "github.com/${var.github_owner}/${var.github_repository}"
+              allowed_overrides      = ["workflow"]
+              allow_custom_workflows = true
+            }
+          ]
+        })
       }
 
       env {
@@ -236,6 +239,11 @@ resource "azurerm_container_app" "atlantis" {
 
       env {
         name  = "ATLANTIS_SILENCE_NO_PROJECTS"
+        value = "true"
+      }
+
+      env {
+        name  = "ATLANTIS_WRITE_GIT_CREDS"
         value = "true"
       }
 
