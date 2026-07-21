@@ -6,12 +6,12 @@ workflows:
       steps:
         - init:
             extra_args:
-              - "-backend-config=backends/lab-acr.backend.tfvars"
+              - "-backend-config=backends/prod-acr.backend.tfvars"
               - "-reconfigure"
 
         - plan:
             extra_args:
-              - "-var-file=tfvars/lab-acr.tfvars"
+              - "-var-file=tfvars/prod-acr.tfvars"
 
     apply:
       steps:
