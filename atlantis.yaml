@@ -1,0 +1,36 @@
+version: 3
+
+workflows:
+  cyber-range-lab:
+    plan:
+      steps:
+        - init:
+            extra_args:
+              - "-backend-config=backends/prod-acr.backend.tfvars"
+              - "-reconfigure"
+
+        - plan:
+            extra_args:
+              - "-var-file=tfvars/prod-acr.tfvars"
+
+    apply:
+      steps:
+        - apply
+
+projects:
+  - name: cyber-range-lab
+    dir: .
+    workspace: default
+    workflow: cyber-range-lab
+
+    autoplan:
+      enabled: true
+      when_modified:
+        - "*.tf"
+        - "tfvars/prod-acr.tfvars"
+        - "backends/prod-acr.backend.tfvars"
+        - "artifacts/scripts/**"
+
+    apply_requirements:
+      - mergeable
+      - undiverged

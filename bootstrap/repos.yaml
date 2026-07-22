@@ -1,0 +1,5 @@
+repos:
+  - id: github.com/ryan-longoria/azure-cyber-range
+    allowed_overrides:
+      - workflow
+    allow_custom_workflows: true
