@@ -152,13 +152,13 @@ resource "azurerm_container_app" "atlantis" {
     name                = "terraform-arm-client-id"
     key_vault_secret_id = data.azurerm_key_vault_secret.terraform_arm_client_id.versionless_id
     identity            = azurerm_user_assigned_identity.atlantis.id
-    }
+  }
 
-    secret {
+  secret {
     name                = "terraform-arm-client-secret"
     key_vault_secret_id = data.azurerm_key_vault_secret.terraform_arm_client_secret.versionless_id
     identity            = azurerm_user_assigned_identity.atlantis.id
-    }
+  }
 
   ingress {
     external_enabled = true
@@ -268,15 +268,15 @@ resource "azurerm_container_app" "atlantis" {
         value = "true"
       }
 
-        env {
+      env {
         name        = "ARM_CLIENT_ID"
         secret_name = "terraform-arm-client-id"
-        }
+      }
 
-        env {
+      env {
         name        = "ARM_CLIENT_SECRET"
         secret_name = "terraform-arm-client-secret"
-        }
+      }
 
       env {
         name  = "ARM_TENANT_ID"
