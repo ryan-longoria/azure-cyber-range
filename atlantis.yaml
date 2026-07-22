@@ -76,5 +76,5 @@ projects:
       enabled: true
       when_modified:
         - "**/*.tf"
-        - "../../tfvars/prod-acr.tfvars"
-        - "../../backends/prod-acr.backend.tfvars"
+        - "../tfvars/prod-acr.tfvars"
+        - "../backends/prod-acr.backend.tfvars"
