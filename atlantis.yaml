@@ -4,6 +4,14 @@ workflows:
   cyber-range-lab:
     plan:
       steps:
+        - env:
+            name: ARM_MSI_ENDPOINT
+            command: 'printf "%s" "$IDENTITY_ENDPOINT"'
+
+        - env:
+            name: ARM_MSI_API_VERSION
+            value: "2019-08-01"
+
         - init:
             extra_args:
               - "-backend-config=backends/prod-acr.backend.tfvars"
@@ -15,6 +23,14 @@ workflows:
 
     apply:
       steps:
+        - env:
+            name: ARM_MSI_ENDPOINT
+            command: 'printf "%s" "$IDENTITY_ENDPOINT"'
+
+        - env:
+            name: ARM_MSI_API_VERSION
+            value: "2019-08-01"
+
         - apply
 
 projects:
