@@ -142,6 +142,12 @@ resource "azurerm_container_app" "atlantis" {
     identity            = azurerm_user_assigned_identity.atlantis.id
   }
 
+  secret {
+    name                = "terraform-backend-access-key"
+    key_vault_secret_id = data.azurerm_key_vault_secret.terraform_backend_access_key.versionless_id
+    identity            = azurerm_user_assigned_identity.atlantis.id
+  }
+
   ingress {
     external_enabled = true
     target_port      = 4141
@@ -189,8 +195,8 @@ resource "azurerm_container_app" "atlantis" {
         value = jsonencode({
           repos = [
             {
-              id                     = "github.com/${var.github_owner}/${var.github_repository}"
-              allowed_overrides      = [
+              id = "github.com/${var.github_owner}/${var.github_repository}"
+              allowed_overrides = [
                 "workflow",
                 "apply_requirements"
               ]
@@ -250,13 +256,6 @@ resource "azurerm_container_app" "atlantis" {
         value = "true"
       }
 
-      # Terraform AzureRM provider authentication
-
-      env {
-        name  = "ARM_USE_MSI"
-        value = "true"
-      }
-
       env {
         name  = "ARM_CLIENT_ID"
         value = azurerm_user_assigned_identity.atlantis.client_id
@@ -271,11 +270,25 @@ resource "azurerm_container_app" "atlantis" {
         name  = "ARM_SUBSCRIPTION_ID"
         value = var.subscription_id
       }
+
+      env {
+        name        = "ARM_ACCESS_KEY"
+        secret_name = "terraform-backend-access-key"
+      }
     }
   }
 
   depends_on = [
     azurerm_role_assignment.atlantis_key_vault_secrets_user,
     azurerm_container_app_environment_storage.atlantis
+  ]
+}
+
+data "azurerm_key_vault_secret" "terraform_backend_access_key" {
+  name         = "terraform-backend-access-key"
+  key_vault_id = azurerm_key_vault.atlantis.id
+
+  depends_on = [
+    azurerm_role_assignment.atlantis_key_vault_secrets_user
   ]
 }
