@@ -148,6 +148,18 @@ resource "azurerm_container_app" "atlantis" {
     identity            = azurerm_user_assigned_identity.atlantis.id
   }
 
+  secret {
+    name                = "terraform-arm-client-id"
+    key_vault_secret_id = data.azurerm_key_vault_secret.terraform_arm_client_id.versionless_id
+    identity            = azurerm_user_assigned_identity.atlantis.id
+    }
+
+    secret {
+    name                = "terraform-arm-client-secret"
+    key_vault_secret_id = data.azurerm_key_vault_secret.terraform_arm_client_secret.versionless_id
+    identity            = azurerm_user_assigned_identity.atlantis.id
+    }
+
   ingress {
     external_enabled = true
     target_port      = 4141
@@ -256,10 +268,15 @@ resource "azurerm_container_app" "atlantis" {
         value = "true"
       }
 
-      env {
-        name  = "ARM_CLIENT_ID"
-        value = azurerm_user_assigned_identity.atlantis.client_id
-      }
+        env {
+        name        = "ARM_CLIENT_ID"
+        secret_name = "terraform-arm-client-id"
+        }
+
+        env {
+        name        = "ARM_CLIENT_SECRET"
+        secret_name = "terraform-arm-client-secret"
+        }
 
       env {
         name  = "ARM_TENANT_ID"
@@ -286,6 +303,24 @@ resource "azurerm_container_app" "atlantis" {
 
 data "azurerm_key_vault_secret" "terraform_backend_access_key" {
   name         = "terraform-backend-access-key"
+  key_vault_id = azurerm_key_vault.atlantis.id
+
+  depends_on = [
+    azurerm_role_assignment.atlantis_key_vault_secrets_user
+  ]
+}
+
+data "azurerm_key_vault_secret" "terraform_arm_client_id" {
+  name         = "terraform-arm-client-id"
+  key_vault_id = azurerm_key_vault.atlantis.id
+
+  depends_on = [
+    azurerm_role_assignment.atlantis_key_vault_secrets_user
+  ]
+}
+
+data "azurerm_key_vault_secret" "terraform_arm_client_secret" {
+  name         = "terraform-arm-client-secret"
   key_vault_id = azurerm_key_vault.atlantis.id
 
   depends_on = [
