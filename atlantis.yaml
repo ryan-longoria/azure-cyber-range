@@ -67,3 +67,14 @@ projects:
     apply_requirements:
       - mergeable
       - undiverged
+  
+  - name: infra-lab
+    dir: environments/infra-lab
+    workflow: cyber-range-lab
+
+    autoplan:
+      enabled: true
+      when_modified:
+        - "**/*.tf"
+        - "../../tfvars/prod-acr.tfvars"
+        - "../../backends/prod-acr.backend.tfvars"
