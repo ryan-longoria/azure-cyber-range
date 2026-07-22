@@ -17,6 +17,22 @@ workflows:
       steps:
         - apply
 
+  bootstrap:
+    plan:
+      steps:
+        - init:
+            extra_args:
+              - "-backend-config=backends/prod-acr.backend.tfvars"
+              - "-reconfigure"
+
+        - plan:
+            extra_args:
+              - "-var-file=tfvars/bootstrap.tfvars"
+
+    apply:
+      steps:
+        - apply
+
 projects:
   - name: cyber-range-lab
     dir: .
@@ -28,6 +44,23 @@ projects:
       when_modified:
         - "*.tf"
         - "tfvars/prod-acr.tfvars"
+        - "backends/prod-acr.backend.tfvars"
+        - "artifacts/scripts/**"
+
+    apply_requirements:
+      - mergeable
+      - undiverged
+
+  - name: bootstrap
+    dir: .
+    workspace: default
+    workflow: bootstrap
+
+    autoplan:
+      enabled: true
+      when_modified:
+        - "*.tf"
+        - "tfvars/bootstrap.tfvars"
         - "backends/prod-acr.backend.tfvars"
         - "artifacts/scripts/**"
 
