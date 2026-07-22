@@ -86,7 +86,7 @@ projects:
   
   - name: infra-lab
     dir: environments/infra-lab
-    workflow: cyber-range-lab
+    workflow: infra-lab
 
     autoplan:
       enabled: true
